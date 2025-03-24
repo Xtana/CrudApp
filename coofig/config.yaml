@@ -1,0 +1,9 @@
+server:
+  port: ":8080"
+
+database:
+  driver: "postgres"
+  dsn: "postgres://user:password@localhost:5432/yourdb?sslmode=disable" # указать верные данные
+
+migrations:
+  dir: "./internal/migration"
