@@ -1,0 +1,9 @@
+server:
+  port: ":8080"
+
+database:
+  driver: "postgres"
+  dsn: "postgres://user:password@db:5432/crudapp_db?sslmode=disable&search_path=public"
+
+migrations:
+  dir: "./internal/migrations"

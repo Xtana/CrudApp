@@ -3,6 +3,8 @@ package app
 import (
 	"crudapp/internal/transport"
 	"database/sql"
+	_ "github.com/lib/pq"
+	"fmt"
 	"log"
 	"os"
 
@@ -14,14 +16,14 @@ import (
 type Config struct {
 	Server struct {
 		Port string `yaml:"port"`
-	} `yaml: "server"`
+	} `yaml:"server"`
 	Database struct {
-		Driver 	string `yaml:"driver"`
-		Dsn		string `yaml:"dsn"`
+		Driver string `yaml:"driver"`
+		Dsn    string `yaml:"dsn"`
 	} `yaml:"database"`
 	Migrations struct {
 		Dir string `yaml:"dir"`
-	} `yaml:"migration"`
+	} `yaml:"migrations"`
 }
 
 type App struct {
@@ -29,27 +31,27 @@ type App struct {
 }
 
 func NewApp(configPath string) (*App, error) {
-	date, err := os.ReadFile(configPath)
+	data, err := os.ReadFile(configPath)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("ошибка чтения конфигурации: %w", err)
 	}
 
 	var cfg Config
-	if err = yaml.Unmarshal(date, &cfg); err != nil {
-		return nil, err
+	if err = yaml.Unmarshal(data, &cfg); err != nil {
+		return nil, fmt.Errorf("ошибка парсинга конфигурации: %w", err)
 	}
 	return &App{cfg}, nil
 }
 
-func (a *App) Ran() {
+func (a *App) Run() {
 	db, err := sql.Open(a.config.Database.Driver, a.config.Database.Dsn)
 	if err != nil {
-		log.Fatalf("Ошибка подключения к бд:", err)
+		log.Fatalf("Ошибка подключения к БД: %v", err)
 	}
 	defer db.Close()
 
 	if err := goose.Up(db, a.config.Migrations.Dir); err != nil {
-		log.Fatal("Ошибка миграций:", err)
+		log.Fatalf("Ошибка миграций: %v", err)
 	}
 
 	e := echo.New()

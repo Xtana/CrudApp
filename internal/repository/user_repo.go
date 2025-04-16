@@ -23,7 +23,7 @@ func NewUserRepository(db *sql.DB) UserRepository {
 }
 
 func (r *userRepo) Create(user *domain.User) error {
-	query := "INSERT INTO (name, email) VALUES ($1, $2)"
+	query := "INSERT INTO users (name, email) VALUES ($1, $2)"
 	return r.db.QueryRow(query, user.Name, user.Email).Scan(&user.Id)
 }
 
@@ -63,7 +63,7 @@ func (r *userRepo) GetAll() ([]*domain.User, error) {
 }
 
 func (r *userRepo) Update(user *domain.User) error {
-	query := "UPDATE users SET name = $1, email = $2, WHERE id = $3"
+	query := "UPDATE users SET name = $1, email = $2 WHERE id = $3"
 	_, err := r.db.Exec(query, user.Name, user.Email, user.Id)
 	return err
 }
